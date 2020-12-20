@@ -1,0 +1,74 @@
+apiVersion: 1.0.0
+metadata:
+  name: quarkus-workspace
+components:
+  - id: redhat/quarkus-java11/latest
+    type: chePlugin
+  - mountSources: true
+    endpoints:
+      - name: quarkus-development-server
+        port: 8080
+      - attributes:
+          path: /hello/greeting/che-user
+        name: hello-greeting-endpoint
+        port: 8080
+    memoryLimit: 4Gi
+    type: dockerimage
+    alias: quarkus-tools
+    image: 'image-registry.openshift-image-registry.svc:5000/openshift/quarkus-stack:2.5'
+    env:
+      - value: /home/jboss/.m2
+        name: MAVEN_CONFIG
+      - value: '-Xmx4G -Xss128M -XX:MetaspaceSize=1G -XX:MaxMetaspaceSize=2G -XX:+CMSClassUnloadingEnabled'
+        name: MAVEN_OPTS
+commands:
+  - name: Login to OpenShift
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}'
+        type: exec
+        command: 'oc login https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT --insecure-skip-tls-verify=true'
+        component: quarkus-tools
+  - name: Run Tests
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}'
+        type: exec
+        command: 'mvn verify -f ${CHE_PROJECTS_ROOT}/quarkus-workshop-m1m2-labs'
+        component: quarkus-tools
+  - name: Start Live Coding
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}'
+        type: exec
+        command: 'mvn clean compile quarkus:dev -f ${CHE_PROJECTS_ROOT}/quarkus-workshop-m1m2-labs'
+        component: quarkus-tools
+  - name: Package App for OpenShift
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}'
+        type: exec
+        command: 'mvn package -DuberJar=true -DskipTests -f ${CHE_PROJECTS_ROOT}/quarkus-workshop-m1m2-labs'
+        component: quarkus-tools
+  - name: Build Native App
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}'
+        type: exec
+        command: 'mvn package -Pnative -DskipTests -Dquarkus.package.uber-jar=false -f ${CHE_PROJECTS_ROOT}/quarkus-workshop-m1m2-labs'
+        component: quarkus-tools
+  - name: Start Debugger on 5005
+    actions:
+      - referenceContent: |
+          {
+            "version": "0.2.0",
+            "configurations": [
+              {
+                "type": "java",
+                "request": "attach",
+                "name": "Attach to App",
+                "hostName": "localhost",
+                "port": 5005
+              }
+            ]
+          }
+        type: vscode-launch
+
+
+---
+
