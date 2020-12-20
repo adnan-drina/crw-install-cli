@@ -1,6 +1,11 @@
 apiVersion: 1.0.0
 metadata:
-  name: quarkus-workspace
+  name: quarkus-demo
+projects:
+  - name: quarkus-demo-app
+    source:
+      type: git
+      location: 'https://github.com/adnan-drina/quarkus-demo-app.git'
 components:
   - id: redhat/quarkus-java11/latest
     type: chePlugin
@@ -9,15 +14,18 @@ components:
       - name: quarkus-development-server
         port: 8080
       - attributes:
-          path: /hello/greeting/che-user
-        name: hello-greeting-endpoint
+          path: /hello
+        name: hello-endpoint
         port: 8080
     memoryLimit: 4Gi
     type: dockerimage
+    volumes:
+      - name: m2
+        containerPath: /home/developer/.m2
     alias: quarkus-tools
-    image: 'image-registry.openshift-image-registry.svc:5000/openshift/quarkus-stack:2.5'
+    image: 'quay.io/adrina/crw-stack-quarkus:2.1'
     env:
-      - value: /home/jboss/.m2
+      - value: /home/developer/.m2
         name: MAVEN_CONFIG
       - value: '-Xmx4G -Xss128M -XX:MetaspaceSize=1G -XX:MaxMetaspaceSize=2G -XX:+CMSClassUnloadingEnabled'
         name: MAVEN_OPTS
@@ -32,27 +40,27 @@ commands:
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}'
         type: exec
-        command: 'mvn verify -f ${CHE_PROJECTS_ROOT}/quarkus-workshop-m1m2-labs'
+        command: 'mvn verify -f ${CHE_PROJECTS_ROOT}/quarkus-demo-app'
         component: quarkus-tools
   - name: Start Live Coding
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}'
         type: exec
-        command: 'mvn clean compile quarkus:dev -f ${CHE_PROJECTS_ROOT}/quarkus-workshop-m1m2-labs'
+        command: 'mvn clean compile quarkus:dev -f ${CHE_PROJECTS_ROOT}/quarkus-demo-app'
         component: quarkus-tools
-  - name: Package App for OpenShift
+  - name: Package App (JVM)
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}'
         type: exec
-        command: 'mvn package -DuberJar=true -DskipTests -f ${CHE_PROJECTS_ROOT}/quarkus-workshop-m1m2-labs'
+        command: 'mvn package -DuberJar=true -DskipTests -f ${CHE_PROJECTS_ROOT}/quarkus-demo-app'
         component: quarkus-tools
-  - name: Build Native App
+  - name: Package App (Native)
     actions:
       - workdir: '${CHE_PROJECTS_ROOT}'
         type: exec
-        command: 'mvn package -Pnative -DskipTests -Dquarkus.package.uber-jar=false -f ${CHE_PROJECTS_ROOT}/quarkus-workshop-m1m2-labs'
+        command: 'mvn package -Pnative -DskipTests -Dquarkus.package.uber-jar=false -f ${CHE_PROJECTS_ROOT}/quarkus-demo-app'
         component: quarkus-tools
-  - name: Start Debugger on 5005
+  - name: Attach remote debugger
     actions:
       - referenceContent: |
           {
@@ -61,14 +69,10 @@ commands:
               {
                 "type": "java",
                 "request": "attach",
-                "name": "Attach to App",
+                "name": "Attach to Remote Quarkus App",
                 "hostName": "localhost",
                 "port": 5005
               }
             ]
           }
         type: vscode-launch
-
-
----
-
