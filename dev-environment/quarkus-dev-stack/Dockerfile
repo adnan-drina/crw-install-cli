@@ -67,9 +67,8 @@ RUN mkdir -p /projects && \
 ADD entrypoint.sh ${HOME}/
 RUN chmod +x ${HOME}/*.sh
 
-# oh-my-zsh
-# RUN sudo dnf install -y zsh util-linux-user powerline powerline-fonts fontawesome-fonts ruby ruby-devel redhat-rpm-config make
-# RUN sudo dnf install -y zsh powerline powerline-fonts which
+# powerline terminal
+# RUN sudo dnf install -y zsh util-linux-user powerline powerline-fonts fontawesome-fonts ruby ruby-devel redhat-rpm-config make which
 # RUN echo 'if [ -f `which powerline-daemon` ]; then' >> ~/.bashrc
 # RUN echo '    powerline-daemon -q' >> ~/.bashrc
 # RUN echo '    POWERLINE_BASH_CONTINUATION=1' >> ~/.bashrc
@@ -77,9 +76,11 @@ RUN chmod +x ${HOME}/*.sh
 # RUN echo '    . /usr/share/powerline/bash/powerline.sh' >> ~/.bashrc
 # RUN echo 'fi' >> ~/.bashrc
 
-RUN sudo dnf install -y zsh
+# oh-my-zsh
+RUN dnf install -y zsh
 RUN sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
-RUN echo 'developer:x:1000600000:0::/home/developer:/bin/zsh' >> /etc/passwd
+# RUN git clone https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/themes/powerlevel10k
+RUN sed -i -e 's|ZSH_THEME="robbyrussell"|ZSH_THEME="eastwood"|g' ~/.zshrc
 
 # Remove artifacts and modules
 RUN [ ! -d /tmp/scripts ] || rm -rf /tmp/scripts
