@@ -23,7 +23,7 @@ components:
       - name: m2
         containerPath: /home/developer/.m2
     alias: quarkus-tools
-    image: 'quay.io/adrina/crw-stack-quarkus:3.0'
+    image: 'quay.io/adrina/crw-stack-quarkus:3.1'
     env:
       - value: /home/developer/.m2
         name: MAVEN_CONFIG

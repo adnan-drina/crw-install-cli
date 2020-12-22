@@ -52,9 +52,9 @@ RUN echo $(tkn version)
 
 # add developer user and configure it
 RUN mkdir -p /projects && \
-    useradd -u 1000 -G wheel,root -d /home/developer --shell /bin/bash -m developer && \
+    useradd -u 1000 -G wheel,root -d /home/developer --shell /bin/zsh -m developer && \
     mkdir -p /home/developer && cat /etc/passwd | \
-    sed s#developer:x.*#developer:x:\${USER_ID}:\${GROUP_ID}::\${HOME}:/bin/bash#g \
+    sed s#developer:x.*#developer:x:\${USER_ID}:\${GROUP_ID}::\${HOME}:/bin/zsh#g \
     > /home/developer/passwd.template && \
     cat /etc/group | \
     sed s#root:x:0:#root:x:0:0,\${USER_ID}:#g \
