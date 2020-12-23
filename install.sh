@@ -12,7 +12,7 @@ echo "CRW OperatorGroup created!"
 echo " "
 echo "Creating CRW Subscription"
 oc apply -f crw-sub.yaml
-sleep 60
+sleep 30
 CRW="$(oc get pods -o name -n codeready-workspaces | grep codeready-operator)"
 oc -n codeready-workspaces wait --for=condition=Ready ${CRW}
 echo "CRW Subscription created!"
