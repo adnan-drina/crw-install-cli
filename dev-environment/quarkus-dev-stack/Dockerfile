@@ -8,6 +8,7 @@ ENV MANDREL_VERSION="20.2.0.0.Final" \
     KN_VERSION="0.17.3" \
     TKN_VERSION="0.13.1" \
     ODO_VERSION="v2.0.3" \
+    KAM_VERSION="v0.0.16" \
     HOME="/home/developer"
 
 # Install prerequisites for Mandrel, podman and wget
@@ -49,6 +50,11 @@ RUN echo $(kn version)
 RUN wget -O /tmp/tkn.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/pipeline/${TKN_VERSION}/tkn-linux-amd64-${TKN_VERSION}.tar.gz \
     && cd /usr/bin && tar -xvzf /tmp/tkn.tar.gz ./tkn && chmod a+x tkn && rm -f /tmp/tkn.tar.gz
 RUN echo $(tkn version)
+
+# Install tekton cli
+RUN wget -O /tmp/kam.tar.gz https://github.com/redhat-developer/kam/archive/${KAM_VERSION}.tar.gz \
+    && cd /usr/bin && tar -xvzf /tmp/kam.tar.gz ./kam && chmod a+x kam && rm -f /tmp/kam.tar.gz
+RUN echo $(kam version)
 
 # add developer user and configure it
 RUN mkdir -p /projects && \
