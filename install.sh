@@ -13,8 +13,8 @@ echo " "
 echo "Creating CRW Subscription"
 oc apply -f crw-sub.yaml
 sleep 30
-CRW="$(oc get pods -o name -n codeready-workspaces | grep codeready-operator)"
-oc -n codeready-workspaces wait --for=condition=Ready ${CRW}
+CRW="$(oc get sub -o name -n codeready-workspaces | grep codeready-workspaces)"
+oc -n codeready-workspaces wait --timeout=120s --for=condition=CatalogSourcesUnhealthy=False ${CRW}
 echo "CRW Subscription created!"
 echo " "
 echo "Deploying CheCluster CR"
