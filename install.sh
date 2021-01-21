@@ -12,11 +12,12 @@ echo "CRW OperatorGroup created!"
 echo " "
 echo "Creating CRW Subscription"
 oc apply -f crw-sub.yaml
-sleep 30
+sleep 20
 CRW="$(oc get sub -o name -n codeready-workspaces | grep codeready-workspaces)"
 oc -n codeready-workspaces wait --timeout=120s --for=condition=CatalogSourcesUnhealthy=False ${CRW}
 echo "CRW Subscription created!"
 echo " "
+sleep 10
 echo "Deploying CheCluster CR"
 oc apply -f che-ephemeral-cr.yaml
 echo "CheCluster CR created!"
