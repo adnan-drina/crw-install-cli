@@ -19,7 +19,8 @@ echo "CRW Subscription created!"
 echo " "
 sleep 10
 echo "Deploying CheCluster CR"
-oc apply -f che-ephemeral-cr.yaml
+#oc apply -f che-ephemeral-cr.yaml
+oc apply -f che-cr.yaml
 echo "CheCluster CR created!"
 echo " "
 #echo "Searching for available routes"
